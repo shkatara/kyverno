@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: label-needed
+spec:
+  background: false
+  validationFailureAction: Enforce
+  applyRules: All
+  rules:
+    - name: This is rule to check if the labels are existing
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - ReplicaSet
+                - CronJob
+                - DaemonSet
+                - Job
+                - ReplicationController
+      validate:
+        message: "The pod needs to have app, team and owner labels"
+        pattern:
+          spec:
+            selector:
+              matchLabels:
+                app: "?*"
+                team: "?*"
+                owner: "?*"

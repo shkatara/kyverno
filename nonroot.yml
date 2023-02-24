@@ -1,0 +1,24 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: stoppodrunningasroot
+spec:
+  background: False
+  validationFailureAction: Enforce
+  applyRules: All
+  rules:
+    - name: match pods for running as nonroot
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "This pod should not run as root (but whatif the image was made as user 0)"
+        pattern:
+          spec:
+            containers:
+              - name: "*"
+                securityContext:
+                  runAsNonRoot: "true"
+              
